@@ -65,7 +65,7 @@
       if (localStorage.getItem('profile'))
         this.user = JSON.parse(localStorage.getItem('profile'));
       if(this.user.position === "1") {
-        this.links.push([['mdi-bank', 'Users', '/users']])
+        this.links.push(['mdi-account-multiple', 'Users', '/users'])
       }
     }
     }

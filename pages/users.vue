@@ -45,9 +45,9 @@
               <template #[`item.id`] = "{ index }">
                 {{ index + 1 }}
               </template>
-              <template #[`item.status`] = "{ item }">
+              <!-- <template #[`item.status`] = "{ item }">
                 <span :class="item.active ? 'active' : 'inactive'">{{ item.active ? 'Active' : 'Inactive' }}</span>
-              </template>
+              </template> -->
               </v-data-table>
             </v-tab-item>
             </v-tabs>
@@ -159,17 +159,18 @@
           },
           { text: 'Names', value: 'names' },
           { text: 'Phone', value: 'phone' },
-          { text: 'Status', value: 'status' },
-          { text: 'Action', value: 'action' },
         ],
         userName: '',
         userPhone: '',
         loading: false,
         saveLoading: false,
-        UserItems: [],
+        userItems: [],
         lowyerItems: [],
         analystItems: [],
-        UserTypes: ['Lowyer', 'Analyst'],
+        UserTypes: [
+          {text: 'Lawyer', value: 2},
+          {text: 'Analyst', value: 3},
+        ],
         search: '',
         slctuserType: '',
       }
@@ -186,7 +187,7 @@
             names: this.userName,
             phone: this.userPhone,
             password: 'abcdef12',
-            userType: this.userType,
+            userType: this.slctuserType,
           })
           .then((res) => {
             this.getUsers()
@@ -210,9 +211,9 @@
         this.loading = true
         this.$axios.get("getUsers")
         .then(res => {
-          this.UserItems = res.data.Users
-          this.lowyerItems = this.UserItems.filter((item) => item.userType === 'lowyer')
-          this.analystItems = this.UserItems.filter((item) => item.userType === 'analyst')
+          this.userItems = res.data
+          this.lowyerItems = this.userItems.filter((item) => item.userType === '2')
+          this.analystItems = this.userItems.filter((item) => item.userType === '3')
           
         })
         .finally(() => {

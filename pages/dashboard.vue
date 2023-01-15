@@ -31,7 +31,7 @@
       <v-col cols="12" lg="4" md="4">
         <v-card elevation="10">
           <v-card-title>Received Cases <small style="color: #0DA005; margin-left: 15px;"> (Category Based)</small> </v-card-title>
-          <mdb-container>
+          <mdb-container v-if="pieHasData">
             <mdb-pie-chart
               datalabels
               :data="pieChartData"
@@ -40,6 +40,11 @@
               :height="300"
             />
           </mdb-container>
+          <v-skeleton-loader
+          v-else
+          v-bind="attrs"
+          type="card-avatar, article"
+        ></v-skeleton-loader>
         </v-card>
       </v-col>
       <v-col cols="12" lg="8" md="8">
@@ -184,9 +189,9 @@ export default {
         labels: [],
         datasets: [
           {
-            data: [100, 50, 20],
-            backgroundColor: ['#46BFBD', '#FDB45C', '#E30415'],
-            hoverBackgroundColor: ['#5AD3D1', '#FFC870', '#FC2638'],
+            data: [],
+            backgroundColor: ['#1C9118','#474847','#46BFBD', '#FDB45C','#1305B2', '#E30415','##9A036A'],
+            hoverBackgroundColor: ['24BE1F','#292A29','#5AD3D1', '#FFC870','#0D037F', '#FC2638','#CC048D'],
           },
         ],
       },
@@ -209,6 +214,7 @@ export default {
           },
         },
       },
+      pieHasData: true,
       barChartData: {
         labels: [
           'Jan',
@@ -295,10 +301,17 @@ export default {
       user: [],
       questions: [],
       catItems: [],
+      attrs: {
+        class: 'mb-6',
+        boilerplate: true,
+        elevation: 2,
+      },
     }
   },
+  
   mounted() {
     this.getCases()
+    this.getChartData2()
     if (process.browser){
       if (localStorage.getItem('profile'))
         this.user = JSON.parse(localStorage.getItem('profile'));
@@ -319,7 +332,7 @@ export default {
         .get('getCasesAdmin/' + hasAttorney)
         .then((res) => {
           this.caseItems = res.data
-        })
+        })  
         .catch((err) => {
           this.$toast.error(err.response.data.message)
         })
@@ -329,14 +342,28 @@ export default {
     },
     getChartData()
     {
+      this.pieHasData = false
       this.$axios.get("getCasesByCategory")
       .then(res => {
-        this.catItems = res.data
+        res.data.forEach(val => {
+            this.pieChartData.labels.push(val.title)
+            this.pieChartData.datasets[0].data.push(parseInt(val.num))
+          });
       })
-      .catch(err => {
-        this.$toast.error(err.response.data.message, {
-          position: 'top-right'
-        })
+      .finally(() => {
+        this.pieHasData = true
+      })
+    },
+    getChartData2()
+    {
+      this.pieHasData = false
+      this.$axios.get("http://localhost:8080/getCasesByCategory")
+      .then(res => {
+          // eslint-disable-next-line no-console
+          console.log(res.data);
+      })
+      .finally(() => {
+        this.pieHasData = true
       })
     },
     takeCase() {

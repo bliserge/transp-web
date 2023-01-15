@@ -97,7 +97,7 @@
                 color="primary"
                 small
                 class="mt-3"
-                @click="getCases()"
+                @click="getCases(); isAddNew = true"
                 ><v-icon>mdi-magnify</v-icon></v-btn
               >
               <v-btn
@@ -106,7 +106,7 @@
                 color="error"
                 small
                 class="mt-3 ml-2"
-                @click="isCases = false"
+                @click="isCases = false; isAddNew = true"
                 ><v-icon>mdi-close</v-icon></v-btn
               >
             </v-row>
@@ -178,16 +178,22 @@
                   isDetails = false
                   questions = ''
                 "
-                >Cancel</v-btn
+                >Close</v-btn
               >
-              <v-btn outlined color="warning" @click="handleEdit()"
+              <!-- <v-btn outlined color="warning" @click="handleDelete()"
                 >Delete</v-btn
               >
-              <v-btn outlined color="success" @click="handleEdit()">Edit</v-btn>
+              <v-btn outlined color="success" @click="handleEdit()">Edit</v-btn> -->
             </v-card-actions>
           </v-card>
         </v-col>
-        <v-col>
+        <!-- <v-col v-if="isEdit">
+          <quill
+            v-model="caseDetails"
+            placeholder="Enter details of your case"
+          />
+        </v-col> -->
+        <v-col v-if="isAddNew">
           <div id="newCase" class="newC">
             <v-row justify="center">
               <v-col cols="12" lg="5" md="5">
@@ -269,6 +275,9 @@ export default {
       isDetails: false,
       isCases: false,
       isOnesCases: false,
+      slctCase: [],
+      isEdit: false,
+      isAddNew: true
     }
   },
   mounted() {
@@ -304,6 +313,29 @@ export default {
           console.log(err.response.data)
         })
     },
+    editCase() {
+      this.$axios
+        .post('editCase', {
+          id: this.slctCase.id,
+          caseDetails: this.caseDetails,
+          names: this.names,
+          phone: this.phone,
+          idNumber: this.idNumber,
+          categoryId: this.categoryId,
+        })
+        .then((res) => {
+          // eslint-disable-next-line no-console
+          console.log(res.data)
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.log(err.response.data)
+        })
+        .finally(() => {
+          this.isAddNew = true
+          this.isEdit = false
+        })
+    },
 
     getCases() {
       this.isOnesCases = true
@@ -322,7 +354,11 @@ export default {
     formatter(row, column) {
       return row.address
     },
-    handleEdit(idx, data) {},
+    handleEdit(idx, data) {
+      this.isEdit = true
+      this.isAddNew = false
+      this.caseDetails = this.questions.problem
+    },
     handleDelete(idx, data) {},
   },
 }
