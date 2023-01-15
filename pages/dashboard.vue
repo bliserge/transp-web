@@ -28,9 +28,9 @@
       </v-col>
     </v-row>
     <v-row  v-if="isAdmin" class="pl-3 pr-3">
-      <v-col cols="12" lg="6" md="6">
+      <v-col cols="12" lg="4" md="4">
         <v-card elevation="10">
-          <v-card-title>Received cases Based on Category</v-card-title>
+          <v-card-title>Received Cases <small style="color: #0DA005; margin-left: 15px;"> (Category Based)</small> </v-card-title>
           <mdb-container>
             <mdb-pie-chart
               datalabels
@@ -42,9 +42,9 @@
           </mdb-container>
         </v-card>
       </v-col>
-      <v-col cols="12" lg="6" md="6">
+      <v-col cols="12" lg="8" md="8">
         <v-card elevation="10">
-          <v-card-title>Received cases report</v-card-title>
+          <v-card-title>Received cases <small style="color: #0DA005; margin-left: 15px;">(Monthly)</small></v-card-title>
           <v-card-text>
             <mdb-container>
               <mdb-bar-chart
@@ -149,7 +149,7 @@ export default {
         ],
         datasets: [
           {
-            label: 'Offering Rate',
+            label: 'Solved Cases',
             backgroundColor: 'transparent',
             borderColor: 'rgb(20,18,31)',
             borderWidth: 2,
@@ -181,7 +181,7 @@ export default {
       },
       lineHasData: true,
       pieChartData: {
-        labels: ['Sold', 'In stock', 'damaged'],
+        labels: [],
         datasets: [
           {
             data: [100, 50, 20],
@@ -210,10 +210,23 @@ export default {
         },
       },
       barChartData: {
-        labels: ['A', 'B', 'C', 'A', 'B', 'C'],
+        labels: [
+          'Jan',
+          'Feb',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'Aug',
+          'sept',
+          'oct',
+          'Nov',
+          'Dec',
+        ],
         datasets: [
           {
-            label: '# of Members',
+            label: '# of Cases',
             data: [32, 72, 54, 32, 72, 54],
             backgroundColor: [
               'rgba(255, 99, 132, 0.2)',
@@ -281,6 +294,7 @@ export default {
       isDetails: false,
       user: [],
       questions: [],
+      catItems: [],
     }
   },
   mounted() {
@@ -291,6 +305,7 @@ export default {
       if(this.user.position === "1" || this.user.position === "3") {
         this.withAtt = "With Attorney"
         this.isAdmin = true
+        this.getChartData()
       } else {
         this.withAtt = "My Cases"
         this.isAdmin = false
@@ -314,14 +329,14 @@ export default {
     },
     getChartData()
     {
-      this.$axios.get("getAllData")
+      this.$axios.get("getCasesByCategory")
       .then(res => {
-        // eslint-disable-next-line no-console
-        console.log(res.data);
+        this.catItems = res.data
       })
       .catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err.response.data);
+        this.$toast.error(err.response.data.message, {
+          position: 'top-right'
+        })
       })
     },
     takeCase() {

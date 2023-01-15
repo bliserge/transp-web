@@ -24,20 +24,23 @@
 
 
       <v-list>
-        <v-list-item
-          v-for="[icon, text] in links"
-          :key="icon"
-          link
-          dark
-        >
-          <v-list-item-icon>
-            <v-icon>{{ icon }}</v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ text }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        <div v-for="[icon, text, to] in links" :key="icon" >
+          <nuxt-link :to="to">
+            <v-list-item
+            link
+            dark
+          >
+            <v-list-item-icon>
+              <v-icon>{{ icon }}</v-icon>
+            </v-list-item-icon>
+  
+            <v-list-item-content>
+              <v-list-item-title>{{ text }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item> 
+          </nuxt-link>
+        </div>
+         
       </v-list>
     </v-navigation-drawer>
 
@@ -53,9 +56,19 @@
       cards: ['Today', 'Yesterday'],
       drawer: null,
       links: [
-        ['mdi-bank', 'Home']
+        ['mdi-bank', 'Home', '/darshboard'],
       ],
+      user: [],
     }),
+    mounted() {
+      if (process.browser){
+      if (localStorage.getItem('profile'))
+        this.user = JSON.parse(localStorage.getItem('profile'));
+      if(this.user.position === "1") {
+        this.links.push([['mdi-bank', 'Users', '/users']])
+      }
+    }
+    }
   }
 </script>
 
